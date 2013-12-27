@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+	<_name>Lasercut Box</_name>
+	<id>org.inkscape.render.LasercutBox</id>
+	<dependency type="executable" location="extensions">Lasercut-box.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+	<param name="tab" type="notebook">
+		<page name="Dimensions" _gui-text="Dimensions">
+			<_param name="laserboxuse" type="description" xml:space="preserve">Dimensions can measure the external or internal size of the box.
+The corner cubes can be omitted.
+The document units should be set to mm instead of pixels (assuming you mean to really cut it out with a laser).
+			</_param>
+			<param name="int_ext" _gui-text="Dimensions are" type="optiongroup" appearance="minimal">
+				<option value="True">External</option>
+				<option value="False">Internal</option></param>
+			<param name="units" _gui-text="Units" type="optiongroup" appearance="minimal">
+				<option value="px">px</option>
+				<option value="pt">pt</option>
+				<option value="in">in</option>
+				<option value="cm">cm</option>
+				<option value="mm">mm</option></param>
+			<param name="width"  type="float" min="0.1" max="1000.0" _gui-text="Width">50.0</param>
+			<param name="height" type="float" min="0.1" max="1000.0" _gui-text="Height">30.0</param>
+			<param name="depth"  type="float" min="0.1" max="1000.0" _gui-text="Depth">15</param>
+			<param name="thickness" type="float" min="0.0" max="20.0" precision="2" _gui-text="Material Thickness">3.0</param>
+			<param name="ntab_W" type="int" min="1" max="299" _gui-text="Width Tab Count">11</param>
+			<param name="ntab_H" type="int" min="1" max="299" _gui-text="Height Tab Count">11</param>
+			<param name="ntab_D" type="int" min="1" max="299" _gui-text="Depth Tab Count">6</param>
+			<param name="corners" type="boolean" _gui-text="Include corners">True</param>
+		</page>
+		<page name="Usage2" _gui-text="Laser Kerf">
+			<_param name="laserboxuse2" type="description" xml:space="preserve">The kerf is the amount lost to the burning width of the laser. 
+Typically in the range 0.1 to 0.4 mm. Check with your laser vendor. This will depend on the material being cut and the speed of the laser.
+
+Setting the kerf to 0 will create a box that will use the least material. However the material lost to the laser will make for a loose fit and probably require glue.
+
+If the Kerf is greater than zero then you can have a calculated "Precise fit" or add dimples for a "Press fit".
+A "Precise fit" will change the width of the tabs to allow for the material burned away by the laser and make a tight fit.
+Dimples will add notches for a "Press fit" (see next tab)
+   
+The pattern will be spread out, using more material, because a common laser cut line cannot be used.
+
+
+
+			</_param>
+			<param name="kerf_size" type="float" min="0.0" max="3.0" precision="2" _gui-text="Kerf (amount lost to laser)">0.0</param>
+			<param name="linewidth" type="boolean" _gui-text="Display Line width = kerf">False</param>
+		</page>
+		<page name="Usage3" _gui-text="Dimples">
+			<_param name="laserboxuse3" type="description" xml:space="preserve">Dimples are used so that a press-fit can be
+made in deformable materials like wood.
+
+If Dimple is checked then no "precise fit" kerf adjustment is made to the tabs. Instead a small dimple is added to each notch to enable a press fit.
+   - the dimple size is equal to the kerf size.
+   
+Dimples are useful for flexible materials like wood but are not good for rigid materials like perspex.
+
+Dimple style is half rounds or triangles. Triangles are cheaper to cut, Half rounds fit better.
+
+
+
+
+
+
+
+			</_param>
+			<param name="dimples" type="boolean" _gui-text="Dimples instead of tight fit">False</param>
+			<param name="dstyle" _gui-text="Dimple Style" type="optiongroup" appearance="minimal">
+				<option value="False">Dimples</option>
+				<option value="True">Triangles</option></param>
+		</page>
+		<page name="Usage4" _gui-text="Misc">
+			<_param name="laserboxuse4" type="description" xml:space="preserve">Colours:
+The color scheme used by Ponoko is used here:
+Specifically:
+   - Blue (0,0,255) is the lasercut line color
+   - Orange is a non-printing annotation
+The lines are all 0.1mm in width - as required by Ponoko.
+
+Annotations can be shown. They describe the kerf amount only and are shown on each piece.
+This can be helpful if printing tests fits for different materials.
+
+
+
+
+
+
+
+
+
+
+			</_param>
+			<param name="annotation" type="boolean" _gui-text="Include annotation">True</param>
+		</page>
+	</param>
+	<effect>
+		<object-type>all</object-type>
+		<effects-menu>
+			<submenu _name="Render"/>
+		</effects-menu>
+	</effect>
+	<script>
+		<command reldir="extensions" interpreter="python">Lasercut-box.py</command>
+	</script>
+</inkscape-extension>
