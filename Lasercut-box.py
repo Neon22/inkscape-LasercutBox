@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 ### Versions
 #  0.1 February 2011 - basic lasercut box with dimples etc
+#  0.2 changes to unittouu for Inkscape 0.91
 
 __version__ = "0.1"
 
@@ -447,14 +448,14 @@ class LasercutBox(inkex.Effect):
     ### The    main function    called    by    the    inkscape    UI
     def effect(self):
         # document dimensions (for centering)
-        docW = inkex.unittouu(self.document.getroot().get('width'))
-        docH = inkex.unittouu(self.document.getroot().get('height'))
+        docW = self.unittouu(self.document.getroot().get('width'))
+        docH = self.unittouu(self.document.getroot().get('height'))
         # extract fields from UI
-        self.boxW  = inkex.unittouu(str(self.options.width) + self.options.units)
-        self.boxH  = inkex.unittouu(str(self.options.height) + self.options.units)
-        self.boxD  = inkex.unittouu(str(self.options.depth) + self.options.units)
-        self.thick = inkex.unittouu(str(self.options.thickness) + self.options.units)
-        self.kerf  = inkex.unittouu(str(self.options.kerf_size) + self.options.units)
+        self.boxW  = self.unittouu(str(self.options.width) + self.options.units)
+        self.boxH  = self.unittouu(str(self.options.height) + self.options.units)
+        self.boxD  = self.unittouu(str(self.options.depth) + self.options.units)
+        self.thick = self.unittouu(str(self.options.thickness) + self.options.units)
+        self.kerf  = self.unittouu(str(self.options.kerf_size) + self.options.units)
         if self.kerf < 0.01: self.kerf = 0.0  # snap to 0 for UI error when setting spinner to 0.0
         self.Wtabs  = self.options.ntab_W
         self.Htabs  = self.options.ntab_H
