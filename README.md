@@ -11,3 +11,7 @@ Creates a tabbed box with kerf setting for tight fits. Or dimples for press fits
 * can set zero kerf and use minimal material to create.
 
 In all cases - uses minimal lines to optimise for laser cutting.
+
+
+Install:
+windows: drop inx and py files into folder %appdata%/inkscape/extensions
