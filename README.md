@@ -14,4 +14,4 @@ In all cases - uses minimal lines to optimise for laser cutting.
 
 
 Install:
-windows: drop inx and py files into folder %appdata%/inkscape/extensions
+- windows: drop inx and py files into folder %appdata%/inkscape/extensions
