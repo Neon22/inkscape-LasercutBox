@@ -34,8 +34,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ### Versions
 #  0.1 February 2011 - basic lasercut box with dimples etc
 #  0.2 changes to unittouu for Inkscape 0.91
+#  0.3 Option to avoid half-sized tabs at corners. <juergen@fabmail.org>
 
-__version__ = "0.1"
+__version__ = "0.3"
 
 import inkex, simplestyle
 #from math import *
@@ -74,6 +75,10 @@ class LasercutBox(inkex.Effect):
                         action="store", type="inkbool",
                         dest="corners", default=True,
                         help="The corner cubes can be removed for a different look")
+        self.OptionParser.add_option("-H", "--halftabs",
+                        action="store", type="inkbool",
+                        dest="halftabs", default=True,
+                        help="Start/End with half-sized tabs - Avoid with very small tabs")
         self.OptionParser.add_option("-p", "--ntab_W",
                         action="store", type="int",
                         dest="ntab_W", default=11,
@@ -189,7 +194,8 @@ class LasercutBox(inkex.Effect):
         if masktop and self.kerf ==0.0: # don't draw top for packing with no extra cuts
             line_path.append(['m', [self.boxW, 0]])
         else:
-            for i in range(self.Wtabs):
+            if not self.ht: line_path.append(['l', [self.boxW/self.Wtabs/4 - self.pf/2, 0]])
+            for i in range(int(self.Wtabs)):
                 line_path.append(['h', [self.boxW/self.Wtabs/4 - self.pf/2, 0]])
                 #line_path.append(['v', [0, -thick]])  # replaced with dimpled version
                 for l in self.thickness_line(self.dimple, 'v', -1):
@@ -197,8 +203,10 @@ class LasercutBox(inkex.Effect):
                 line_path.append(['h', [self.boxW/self.Wtabs/2 + self.pf, 0]])
                 line_path.append(['v', [0, self.thick]])
                 line_path.append(['h', [self.boxW/self.Wtabs/4 - self.pf/2, 0]])
+            if not self.ht: line_path.append(['l', [self.boxW/self.Wtabs/4 - self.pf/2, 0]])
         # right hand vertical drop
-        for i in range(self.Htabs):
+        if not self.ht: line_path.append(['l', [0, self.boxH/self.Htabs/4 - self.pf/2]])
+        for i in range(int(self.Htabs)):
             line_path.append(['v', [0, self.boxH/self.Htabs/4 - self.pf/2]])
             line_path.append(['h', [self.thick, 0]])
             line_path.append(['v', [0, self.boxH/self.Htabs/2 + self.pf]])
@@ -206,8 +214,10 @@ class LasercutBox(inkex.Effect):
             for l in self.thickness_line(self.dimple, 'h', -1):
                 line_path.append(l)
             line_path.append(['v', [0, self.boxH/self.Htabs/4 - self.pf/2]])
+        if not self.ht: line_path.append(['l', [0, self.boxH/self.Htabs/4 - self.pf/2]])
         # bottom row (in reverse)
-        for i in range(self.Wtabs):
+        if not self.ht: line_path.append(['l', [-self.boxW/self.Wtabs/4 + self.pf/2, 0]])
+        for i in range(int(self.Wtabs)):
             line_path.append(['h', [-self.boxW/self.Wtabs/4 + self.pf/2, 0]])
             line_path.append(['v', [0, self.thick]])
             line_path.append(['h', [-self.boxW/self.Wtabs/2 - self.pf, 0]])
@@ -215,8 +225,10 @@ class LasercutBox(inkex.Effect):
             for l in self.thickness_line(self.dimple, 'v', -1):
                 line_path.append(l)
             line_path.append(['h', [-self.boxW/self.Wtabs/4 + self.pf/2, 0]])
+        if not self.ht: line_path.append(['l', [-self.boxW/self.Wtabs/4 + self.pf/2, 0]])
         # up the left hand side
-        for i in range(self.Htabs):
+        if not self.ht: line_path.append(['l', [0, -self.boxH/self.Htabs/4 + self.pf/2]])
+        for i in range(int(self.Htabs)):
             line_path.append(['v', [0, -self.boxH/self.Htabs/4 + self.pf/2]])
             #line_path.append(['h', [-thick, 0]]) # replaced with dimpled version
             for l in self.thickness_line(self.dimple, 'h', -1):
@@ -224,6 +236,7 @@ class LasercutBox(inkex.Effect):
             line_path.append(['v', [0, -self.boxH/self.Htabs/2 - self.pf]])
             line_path.append(['h', [self.thick, 0]])
             line_path.append(['v', [0, -self.boxH/self.Htabs/4 + self.pf/2]])
+        if not self.ht: line_path.append(['l', [0, -self.boxH/self.Htabs/4 + self.pf/2]])
         return line_path
 
 
@@ -242,7 +255,8 @@ class LasercutBox(inkex.Effect):
             line_path.append(['v', [0, -self.thick]])
         #
         if self.kerf > 0.0: # if fit perfectly - don't draw double line
-            for i in range(self.Wtabs):
+            if not self.ht: line_path.append(['l', [self.boxW/self.Wtabs/4 + self.pf/2, 0]])
+            for i in range(int(self.Wtabs)):
                 line_path.append(['h', [self.boxW/self.Wtabs/4 + self.pf/2, 0]])
                 line_path.append(['v', [0, self.thick]])
                 line_path.append(['h', [self.boxW/self.Wtabs/2 - self.pf, 0]])
@@ -250,6 +264,7 @@ class LasercutBox(inkex.Effect):
                 for l in self.thickness_line(self.dimple, 'v', -1):
                     line_path.append(l)
                 line_path.append(['h', [self.boxW/self.Wtabs/4 + self.pf/2, 0]])
+            if not self.ht: line_path.append(['l', [self.boxW/self.Wtabs/4 + self.pf/2, 0]])
             if corners: line_path.append(['h', [self.thick, 0]])
         else: # move to skipped drawn lines
             if corners:    
@@ -260,7 +275,8 @@ class LasercutBox(inkex.Effect):
         line_path.append(['v', [0, self.thick]])
         if not corners: line_path.append(['h', [self.thick, 0]])
         # RHS
-        for i in range(self.Dtabs):
+        if not self.ht: line_path.append(['l', [0, self.boxD/self.Dtabs/4 + self.pf/2]])
+        for i in range(int(self.Dtabs)):
             line_path.append(['v', [0, self.boxD/self.Dtabs/4 + self.pf/2]])
             #line_path.append(['h', [-thick, 0]])  # replaced with dimpled version
             for l in self.thickness_line(self.dimple, 'h', -1):
@@ -268,6 +284,7 @@ class LasercutBox(inkex.Effect):
             line_path.append(['v', [0, self.boxD/self.Dtabs/2 - self.pf]])
             line_path.append(['h', [self.thick, 0]])
             line_path.append(['v', [0, self.boxD/self.Dtabs/4 + self.pf/2]])
+        if not self.ht: line_path.append(['l', [0, self.boxD/self.Dtabs/4 + self.pf/2]])
         #
         if corners:
             line_path.append(['v', [0, self.thick]])
@@ -276,7 +293,8 @@ class LasercutBox(inkex.Effect):
             line_path.append(['h', [-self.thick, 0]])
             line_path.append(['v', [0, self.thick]])
         # base
-        for i in range(self.Wtabs):
+        if not self.ht: line_path.append(['l', [-self.boxW/self.Wtabs/4 - self.pf/2, 0]])
+        for i in range(int(self.Wtabs)):
             line_path.append(['h', [-self.boxW/self.Wtabs/4 - self.pf/2, 0]])
             #line_path.append(['v', [0, -thick]]) # replaced with dimpled version
             for l in self.thickness_line(self.dimple, 'v', -1):
@@ -284,6 +302,7 @@ class LasercutBox(inkex.Effect):
             line_path.append(['h', [-self.boxW/self.Wtabs/2 + self.pf, 0]])
             line_path.append(['v', [0, self.thick]])
             line_path.append(['h', [-self.boxW/self.Wtabs/4 - self.pf/2, 0]])
+        if not self.ht: line_path.append(['l', [-self.boxW/self.Wtabs/4 - self.pf/2, 0]])
         #
         if corners:
             line_path.append(['h', [-self.thick, 0]])
@@ -292,7 +311,8 @@ class LasercutBox(inkex.Effect):
             line_path.append(['v', [0, -self.thick]])
             line_path.append(['h', [-self.thick, 0]])
         # LHS
-        for i in range(self.Dtabs):
+        if not self.ht: line_path.append(['l', [0, -self.boxD/self.Dtabs/4 - self.pf/2]])
+        for i in range(int(self.Dtabs)):
             line_path.append(['v', [0, -self.boxD/self.Dtabs/4 - self.pf/2]])
             line_path.append(['h', [self.thick, 0]])
             line_path.append(['v', [0, -self.boxD/self.Dtabs/2 + self.pf]])
@@ -300,6 +320,7 @@ class LasercutBox(inkex.Effect):
             for l in self.thickness_line(self.dimple, 'h', -1):
                 line_path.append(l)
             line_path.append(['v', [0, -self.boxD/self.Dtabs/4 - self.pf/2]])
+        if not self.ht: line_path.append(['l', [0, -self.boxD/self.Dtabs/4 - self.pf/2]])
         #
         if not corners: line_path.append(['h', [self.thick, 0]])
         return line_path
@@ -315,7 +336,8 @@ class LasercutBox(inkex.Effect):
             line_path.append(['h', [self.thick, 0]])
         else:
             line_path.append(['m', [self.thick, 0]])
-        for i in range(self.Dtabs):
+        if not self.ht: line_path.append(['l', [self.boxD/self.Dtabs/4 - self.pf/2, 0]])
+        for i in range(int(self.Dtabs)):
             line_path.append(['h', [self.boxD/self.Dtabs/4 - self.pf/2, 0]])
             line_path.append(['v', [0, -self.thick]])
             line_path.append(['h', [self.boxD/self.Dtabs/2 + self.pf, 0]])
@@ -323,9 +345,11 @@ class LasercutBox(inkex.Effect):
             for l in self.thickness_line(self.dimple, 'v', 1):
                 line_path.append(l)
             line_path.append(['h', [self.boxD/self.Dtabs/4 - self.pf/2, 0]])
+        if not self.ht: line_path.append(['l', [self.boxD/self.Dtabs/4 - self.pf/2, 0]])
         line_path.append(['h', [self.thick, 0]])
         #
-        for i in range(self.Htabs):
+        if not self.ht: line_path.append(['l', [0, self.boxH/self.Htabs/4 + self.pf/2]])
+        for i in range(int(self.Htabs)):
             line_path.append(['v', [0, self.boxH/self.Htabs/4 + self.pf/2]])
             #line_path.append(['h', [-thick, 0]]) # replaced with  dimpled version
             for l in self.thickness_line(self.dimple, 'h', -1):
@@ -333,9 +357,11 @@ class LasercutBox(inkex.Effect):
             line_path.append(['v', [0, self.boxH/self.Htabs/2 - self.pf]])
             line_path.append(['h', [self.thick, 0]])
             line_path.append(['v', [0, self.boxH/self.Htabs/4 + self.pf/2]])
+        if not self.ht: line_path.append(['l', [0, self.boxH/self.Htabs/4 + self.pf/2]])
         line_path.append(['h', [-self.thick, 0]])
         #
-        for i in range(self.Dtabs):
+        if not self.ht: line_path.append(['l', [-self.boxD/self.Dtabs/4 + self.pf/2, 0]])
+        for i in range(int(self.Dtabs)):
             line_path.append(['h', [-self.boxD/self.Dtabs/4 + self.pf/2, 0]])
             #line_path.append(['v', [0, thick]])  # replaced with dimpled version
             for l in self.thickness_line(self.dimple, 'v', 1):  # this is the weird +1 instead of -1 dimple
@@ -343,10 +369,12 @@ class LasercutBox(inkex.Effect):
             line_path.append(['h', [-self.boxD/self.Dtabs/2 - self.pf, 0]])
             line_path.append(['v', [0, -self.thick]])
             line_path.append(['h', [-self.boxD/self.Dtabs/4 + self.pf/2, 0]])
+        if not self.ht: line_path.append(['l', [-self.boxD/self.Dtabs/4 + self.pf/2, 0]])
         line_path.append(['h', [-self.thick, 0]])
         #
         if self.kerf > 0.0:  # if fit perfectly - don't draw double line
-            for i in range(self.Htabs):
+            if not self.ht: line_path.append(['l', [0, -self.boxH/self.Htabs/4 - self.pf/2]])
+            for i in range(int(self.Htabs)):
                 line_path.append(['v', [0, -self.boxH/self.Htabs/4 - self.pf/2]])
                 line_path.append(['h', [self.thick, 0]])
                 line_path.append(['v', [0, -self.boxH/self.Htabs/2 + self.pf]])
@@ -354,6 +382,7 @@ class LasercutBox(inkex.Effect):
                 for l in self.thickness_line(self.dimple, 'h', -1):
                     line_path.append(l)
                 line_path.append(['v', [0, -self.boxH/self.Htabs/4 - self.pf/2]])
+            if not self.ht: line_path.append(['l', [0, -self.boxH/self.Htabs/4 - self.pf/2]])
         return line_path
 
     ###
@@ -465,6 +494,11 @@ class LasercutBox(inkex.Effect):
         corners  = self.options.corners
         self.dimple_tri = self.options.dstyle
         self.annotation = self.options.annotation
+        self.ht  = self.options.halftabs
+        if not self.ht:
+            self.Wtabs += 0.5
+            self.Htabs += 0.5
+            self.Dtabs += 0.5
 
         # Correct for thickness in dimensions
         if self.options.int_ext: # external so add thickness
