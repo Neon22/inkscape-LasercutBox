@@ -27,6 +27,7 @@ The document units should be set to mm instead of pixels (assuming you mean to r
 			<param name="ntab_H" type="int" min="1" max="299" _gui-text="Height Tab Count">11</param>
 			<param name="ntab_D" type="int" min="1" max="299" _gui-text="Depth Tab Count">6</param>
 			<param name="corners" type="boolean" _gui-text="Include corners">True</param>
+			<param name="halftabs" type="boolean" _gui-text="Use half-sized tabs near corners">True</param>
 		</page>
 		<page name="Usage2" _gui-text="Laser Kerf">
 			<_param name="laserboxuse2" type="description" xml:space="preserve">The kerf is the amount lost to the burning width of the laser. 
