@@ -47,73 +47,73 @@ class LasercutBox(inkex.Effect):
 
     def __init__(self):
         inkex.Effect.__init__(self)
-        self.OptionParser.add_option("-i", "--int_ext",
-                        action="store", type="inkbool",
+        self.arg_parser.add_argument("-i", "--int_ext",
+                        type=inkex.Boolean,
                         dest="int_ext", default=False,
                         help="Are the Dimensions for External or Internal sizing.")
-        self.OptionParser.add_option("-x", "--width",
-                        action="store", type="float",
+        self.arg_parser.add_argument("-x", "--width",
+                        type=float,
                         dest="width", default=50.0,
                         help="The Box Width - in the X dimension")
-        self.OptionParser.add_option("-y", "--height",
-                        action="store", type="float",
+        self.arg_parser.add_argument("-y", "--height",
+                        type=float,
                         dest="height", default=30.0,
                         help="The Box Height - in the Y dimension")
-        self.OptionParser.add_option("-z", "--depth",
-                        action="store", type="float",
+        self.arg_parser.add_argument("-z", "--depth",
+                        type=float,
                         dest="depth", default=15.0,
                         help="The Box Depth - in the Z dimension")
-        self.OptionParser.add_option("-t", "--thickness",
-                        action="store", type="float",
+        self.arg_parser.add_argument("-t", "--thickness",
+                        type=float,
                         dest="thickness", default=3.0,
                         help="Material Thickness - critical to know")
-        self.OptionParser.add_option("-u", "--units",
-                        action="store", type="string",
+        self.arg_parser.add_argument("-u", "--units",
+                        type=str,
                         dest="units", default="cm",
                         help="The unit of the box dimensions")
-        self.OptionParser.add_option("-c", "--corners",
-                        action="store", type="inkbool",
+        self.arg_parser.add_argument("-c", "--corners",
+                        type=inkex.Boolean,
                         dest="corners", default=True,
                         help="The corner cubes can be removed for a different look")
-        self.OptionParser.add_option("-H", "--halftabs",
-                        action="store", type="inkbool",
+        self.arg_parser.add_argument("-H", "--halftabs",
+                        type=inkex.Boolean,
                         dest="halftabs", default=True,
                         help="Start/End with half-sized tabs - Avoid with very small tabs")
-        self.OptionParser.add_option("-p", "--ntab_W",
-                        action="store", type="int",
+        self.arg_parser.add_argument("-p", "--ntab_W",
+                        type=int,
                         dest="ntab_W", default=11,
                         help="Number of tabs in Width")
-        self.OptionParser.add_option("-q", "--ntab_H",
-                        action="store", type="int",
+        self.arg_parser.add_argument("-q", "--ntab_H",
+                        type=int,
                         dest="ntab_H", default=11,
                         help="Number of tabs in Height")
-        self.OptionParser.add_option("-r", "--ntab_D",
-                        action="store", type="int",
+        self.arg_parser.add_argument("-r", "--ntab_D",
+                        type=int,
                         dest="ntab_D", default=6,
                         help="Number of tabs in Depth")
-        self.OptionParser.add_option("-k", "--kerf_size",
-                        action="store", type="float",
+        self.arg_parser.add_argument("-k", "--kerf_size",
+                        type=float,
                         dest="kerf_size", default=0.0,
                         help="Kerf size - amount lost to laser for this material. 0 = loose fit")
-        self.OptionParser.add_option("-d", "--dimples",
-                        action="store", type="inkbool",
+        self.arg_parser.add_argument("-d", "--dimples",
+                        type=inkex.Boolean,
                         dest="dimples", default=False,
                         help="Add dimples for press fitting wooden materials")
-        self.OptionParser.add_option("-s", "--dstyle",
-                        action="store", type="inkbool",
+        self.arg_parser.add_argument("-s", "--dstyle",
+                        type=inkex.Boolean,
                         dest="dstyle", default=False,
                         help="Dimples can be triangles(cheaper) or half rounds(better)")
-        self.OptionParser.add_option("-g", "--linewidth",
-                        action="store", type="inkbool",
+        self.arg_parser.add_argument("-g", "--linewidth",
+                        type=inkex.Boolean,
                         dest="linewidth", default=False,
                         help="Use the kerf value as the drawn line width")
-        self.OptionParser.add_option("-j", "--annotation",
-                        action="store", type="inkbool",
+        self.arg_parser.add_argument("-j", "--annotation",
+                        type=inkex.Boolean,
                         dest="annotation", default=True,
                         help="Show Kerf value as annotation")
         #dummy for the doc tab - which is named
-        self.OptionParser.add_option("--tab",
-                        action="store", type="string", 
+        self.arg_parser.add_argument("--tab",
+                        type=str, 
                         dest="tab", default="use",
                         help="The selected UI-tab when OK was pressed")
         #internal useful variables
@@ -611,4 +611,4 @@ class LasercutBox(inkex.Effect):
 ###
 if __name__ == '__main__':
     e = LasercutBox()
-    e.affect()
+    e.run()

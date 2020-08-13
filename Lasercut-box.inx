@@ -2,7 +2,7 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
 	<name>Lasercut Box</name>
 	<id>org.inkscape.LasercutBox</id>
-	<dependency type="executable" location="extensions">Lasercut_box.py</dependency>
+	<dependency type="executable" location="extensions">Lasercut-box.py</dependency>
 	<param name="tab" type="notebook">
 		<page name="Dimensions" gui-text="Dimensions">
 			<param name="laserboxuse" type="description" xml:space="preserve">Dimensions can measure the external or internal size of the box.
@@ -100,6 +100,6 @@ This can be helpful if printing tests fits for different materials.
 		</effects-menu>
 	</effect>
 	<script>
-		<command location="inx" interpreter="python">Lasercut_box.py</command>
+		<command location="inx" interpreter="python">Lasercut-box.py</command>
 	</script>
 </inkscape-extension>
