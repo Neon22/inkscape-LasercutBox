@@ -39,10 +39,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 __version__ = "0.3"
 
 #from math import *
-#import sys
-import inkex, simplestyle
+import sys
+import inkex
 from simplepath import *
 from lxml import etree
+
 
 class LasercutBox(inkex.Effect):
 
@@ -108,10 +109,10 @@ class LasercutBox(inkex.Effect):
                         type=inkex.Boolean,
                         dest="linewidth", default=False,
                         help="Use the kerf value as the drawn line width")
-        self.arg_parser.add_argument("-j", "--annotation",
-                        type=inkex.Boolean,
-                        dest="annotation", default=True,
-                        help="Show Kerf value as annotation")
+        # self.arg_parser.add_argument("-j", "--annotation",
+                        # type=inkex.Boolean,
+                        # dest="annotation", default=True,
+                        # help="Show Kerf value as annotation")
         #dummy for the doc tab - which is named
         self.arg_parser.add_argument("--tab",
                         type=str, 
@@ -149,7 +150,7 @@ class LasercutBox(inkex.Effect):
                 short = self.thick/2 - radius
             if vert_horiz == 'v': # vertical line
                 # first short line
-                lines.append(['v', [0, pos_neg*short]])
+                lines.append(['v', [pos_neg*short]])
                 # half circle
                 if pos_neg == 1: # only the DH_sides need reversed tabs to interlock
                     if self.dimple_tri:
@@ -164,10 +165,10 @@ class LasercutBox(inkex.Effect):
                     else:
                         lines.append(['c', [-radius, 0, -radius, pos_neg*2*radius, 0, pos_neg*2*radius]])
                 # last short line
-                lines.append(['v', [0, pos_neg*short]])
+                lines.append(['v', [pos_neg*short]])
             else: # horizontal line
                 # first short line
-                lines.append(['h', [pos_neg*short, 0]])
+                lines.append(['h', [pos_neg*short]])
                 # half circle
                 if self.dimple_tri:
                     lines.append(['l', [pos_neg*radius, radius]])
@@ -175,15 +176,15 @@ class LasercutBox(inkex.Effect):
                 else:
                     lines.append(['c', [0, radius, pos_neg*2*radius, radius, pos_neg*2*radius, 0]])
                 # last short line
-                lines.append(['h', [pos_neg*short, 0]])
+                lines.append(['h', [pos_neg*short]])
             return lines
         
         # No dimple - so much easier
         else: # return a straight v or h line same as thickness
             if vert_horiz == 'v':
-                return [ ['v', [0, pos_neg*self.thick]] ]
+                return [ ['v', [pos_neg*self.thick]] ]
             else:
-                return [ ['h', [pos_neg*self.thick, 0]] ]
+                return [ ['h', [pos_neg*self.thick]] ]
 
 
     def draw_WH_lid(self, startx, starty, masktop=False):
@@ -197,46 +198,46 @@ class LasercutBox(inkex.Effect):
         else:
             if not self.ht: line_path.append(['l', [self.boxW/self.Wtabs/4 - self.pf/2, 0]])
             for i in range(int(self.Wtabs)):
-                line_path.append(['h', [self.boxW/self.Wtabs/4 - self.pf/2, 0]])
+                line_path.append(['h', [self.boxW/self.Wtabs/4 - self.pf/2]])
                 #line_path.append(['v', [0, -thick]])  # replaced with dimpled version
                 for l in self.thickness_line(self.dimple, 'v', -1):
                     line_path.append(l)
-                line_path.append(['h', [self.boxW/self.Wtabs/2 + self.pf, 0]])
-                line_path.append(['v', [0, self.thick]])
-                line_path.append(['h', [self.boxW/self.Wtabs/4 - self.pf/2, 0]])
+                line_path.append(['h', [self.boxW/self.Wtabs/2 + self.pf]])
+                line_path.append(['v', [self.thick]])
+                line_path.append(['h', [self.boxW/self.Wtabs/4 - self.pf/2]])
             if not self.ht: line_path.append(['l', [self.boxW/self.Wtabs/4 - self.pf/2, 0]])
         # right hand vertical drop
         if not self.ht: line_path.append(['l', [0, self.boxH/self.Htabs/4 - self.pf/2]])
         for i in range(int(self.Htabs)):
-            line_path.append(['v', [0, self.boxH/self.Htabs/4 - self.pf/2]])
-            line_path.append(['h', [self.thick, 0]])
-            line_path.append(['v', [0, self.boxH/self.Htabs/2 + self.pf]])
-            #line_path.append(['h', [-thick, 0]]) # replaced with dimpled version
+            line_path.append(['v', [self.boxH/self.Htabs/4 - self.pf/2]])
+            line_path.append(['h', [self.thick]])
+            line_path.append(['v', [self.boxH/self.Htabs/2 + self.pf]])
+            #line_path.append(['h', [-thick]]) # replaced with dimpled version
             for l in self.thickness_line(self.dimple, 'h', -1):
                 line_path.append(l)
-            line_path.append(['v', [0, self.boxH/self.Htabs/4 - self.pf/2]])
+            line_path.append(['v', [self.boxH/self.Htabs/4 - self.pf/2]])
         if not self.ht: line_path.append(['l', [0, self.boxH/self.Htabs/4 - self.pf/2]])
         # bottom row (in reverse)
         if not self.ht: line_path.append(['l', [-self.boxW/self.Wtabs/4 + self.pf/2, 0]])
         for i in range(int(self.Wtabs)):
-            line_path.append(['h', [-self.boxW/self.Wtabs/4 + self.pf/2, 0]])
-            line_path.append(['v', [0, self.thick]])
-            line_path.append(['h', [-self.boxW/self.Wtabs/2 - self.pf, 0]])
+            line_path.append(['h', [-self.boxW/self.Wtabs/4 + self.pf/2]])
+            line_path.append(['v', [self.thick]])
+            line_path.append(['h', [-self.boxW/self.Wtabs/2 - self.pf]])
             #line_path.append(['v', [0, -thick]])    # replaced    with    dimpled    version
             for l in self.thickness_line(self.dimple, 'v', -1):
                 line_path.append(l)
-            line_path.append(['h', [-self.boxW/self.Wtabs/4 + self.pf/2, 0]])
+            line_path.append(['h', [-self.boxW/self.Wtabs/4 + self.pf/2]])
         if not self.ht: line_path.append(['l', [-self.boxW/self.Wtabs/4 + self.pf/2, 0]])
         # up the left hand side
         if not self.ht: line_path.append(['l', [0, -self.boxH/self.Htabs/4 + self.pf/2]])
         for i in range(int(self.Htabs)):
-            line_path.append(['v', [0, -self.boxH/self.Htabs/4 + self.pf/2]])
-            #line_path.append(['h', [-thick, 0]]) # replaced with dimpled version
+            line_path.append(['v', [-self.boxH/self.Htabs/4 + self.pf/2]])
+            #line_path.append(['h', [-thick]]) # replaced with dimpled version
             for l in self.thickness_line(self.dimple, 'h', -1):
                 line_path.append(l)
-            line_path.append(['v', [0, -self.boxH/self.Htabs/2 - self.pf]])
-            line_path.append(['h', [self.thick, 0]])
-            line_path.append(['v', [0, -self.boxH/self.Htabs/4 + self.pf/2]])
+            line_path.append(['v', [-self.boxH/self.Htabs/2 - self.pf]])
+            line_path.append(['h', [self.thick]])
+            line_path.append(['v', [-self.boxH/self.Htabs/4 + self.pf/2]])
         if not self.ht: line_path.append(['l', [0, -self.boxH/self.Htabs/4 + self.pf/2]])
         return line_path
 
@@ -249,81 +250,81 @@ class LasercutBox(inkex.Effect):
         # top row of tabs
         if corners:
             line_path.append(['M', [startx - self.thick, starty]])
-            line_path.append(['v', [0, -self.thick]])
-            line_path.append(['h', [self.thick, 0]])
+            line_path.append(['v', [-self.thick]])
+            line_path.append(['h', [self.thick]])
         else:
             line_path.append(['M', [startx, starty]])
-            line_path.append(['v', [0, -self.thick]])
+            line_path.append(['v', [-self.thick]])
         #
         if self.kerf > 0.0: # if fit perfectly - don't draw double line
             if not self.ht: line_path.append(['l', [self.boxW/self.Wtabs/4 + self.pf/2, 0]])
             for i in range(int(self.Wtabs)):
-                line_path.append(['h', [self.boxW/self.Wtabs/4 + self.pf/2, 0]])
-                line_path.append(['v', [0, self.thick]])
-                line_path.append(['h', [self.boxW/self.Wtabs/2 - self.pf, 0]])
+                line_path.append(['h', [self.boxW/self.Wtabs/4 + self.pf/2]])
+                line_path.append(['v', [self.thick]])
+                line_path.append(['h', [self.boxW/self.Wtabs/2 - self.pf]])
                 #line_path.append(['v', [0, -thick]]) # replaced with dimpled version
                 for l in self.thickness_line(self.dimple, 'v', -1):
                     line_path.append(l)
-                line_path.append(['h', [self.boxW/self.Wtabs/4 + self.pf/2, 0]])
+                line_path.append(['h', [self.boxW/self.Wtabs/4 + self.pf/2]])
             if not self.ht: line_path.append(['l', [self.boxW/self.Wtabs/4 + self.pf/2, 0]])
-            if corners: line_path.append(['h', [self.thick, 0]])
+            if corners: line_path.append(['h', [self.thick]])
         else: # move to skipped drawn lines
             if corners:    
                 line_path.append(['m', [self.boxW + self.thick, 0]])
             else:
                 line_path.append(['m', [self.boxW, 0]])
         #
-        line_path.append(['v', [0, self.thick]])
-        if not corners: line_path.append(['h', [self.thick, 0]])
+        line_path.append(['v', [self.thick]])
+        if not corners: line_path.append(['h', [self.thick]])
         # RHS
         if not self.ht: line_path.append(['l', [0, self.boxD/self.Dtabs/4 + self.pf/2]])
         for i in range(int(self.Dtabs)):
-            line_path.append(['v', [0, self.boxD/self.Dtabs/4 + self.pf/2]])
-            #line_path.append(['h', [-thick, 0]])  # replaced with dimpled version
+            line_path.append(['v', [self.boxD/self.Dtabs/4 + self.pf/2]])
+            #line_path.append(['h', [-thick]])  # replaced with dimpled version
             for l in self.thickness_line(self.dimple, 'h', -1):
                 line_path.append(l)
-            line_path.append(['v', [0, self.boxD/self.Dtabs/2 - self.pf]])
-            line_path.append(['h', [self.thick, 0]])
-            line_path.append(['v', [0, self.boxD/self.Dtabs/4 + self.pf/2]])
+            line_path.append(['v', [self.boxD/self.Dtabs/2 - self.pf]])
+            line_path.append(['h', [self.thick]])
+            line_path.append(['v', [self.boxD/self.Dtabs/4 + self.pf/2]])
         if not self.ht: line_path.append(['l', [0, self.boxD/self.Dtabs/4 + self.pf/2]])
         #
         if corners:
-            line_path.append(['v', [0, self.thick]])
-            line_path.append(['h', [-self.thick, 0]])
+            line_path.append(['v', [self.thick]])
+            line_path.append(['h', [-self.thick]])
         else:
-            line_path.append(['h', [-self.thick, 0]])
-            line_path.append(['v', [0, self.thick]])
+            line_path.append(['h', [-self.thick]])
+            line_path.append(['v', [self.thick]])
         # base
         if not self.ht: line_path.append(['l', [-self.boxW/self.Wtabs/4 - self.pf/2, 0]])
         for i in range(int(self.Wtabs)):
-            line_path.append(['h', [-self.boxW/self.Wtabs/4 - self.pf/2, 0]])
+            line_path.append(['h', [-self.boxW/self.Wtabs/4 - self.pf/2]])
             #line_path.append(['v', [0, -thick]]) # replaced with dimpled version
             for l in self.thickness_line(self.dimple, 'v', -1):
                 line_path.append(l)
-            line_path.append(['h', [-self.boxW/self.Wtabs/2 + self.pf, 0]])
-            line_path.append(['v', [0, self.thick]])
-            line_path.append(['h', [-self.boxW/self.Wtabs/4 - self.pf/2, 0]])
+            line_path.append(['h', [-self.boxW/self.Wtabs/2 + self.pf]])
+            line_path.append(['v', [self.thick]])
+            line_path.append(['h', [-self.boxW/self.Wtabs/4 - self.pf/2]])
         if not self.ht: line_path.append(['l', [-self.boxW/self.Wtabs/4 - self.pf/2, 0]])
         #
         if corners:
-            line_path.append(['h', [-self.thick, 0]])
-            line_path.append(['v', [0, -self.thick]])
+            line_path.append(['h', [-self.thick]])
+            line_path.append(['v', [-self.thick]])
         else:
-            line_path.append(['v', [0, -self.thick]])
-            line_path.append(['h', [-self.thick, 0]])
+            line_path.append(['v', [-self.thick]])
+            line_path.append(['h', [-self.thick]])
         # LHS
         if not self.ht: line_path.append(['l', [0, -self.boxD/self.Dtabs/4 - self.pf/2]])
         for i in range(int(self.Dtabs)):
-            line_path.append(['v', [0, -self.boxD/self.Dtabs/4 - self.pf/2]])
-            line_path.append(['h', [self.thick, 0]])
-            line_path.append(['v', [0, -self.boxD/self.Dtabs/2 + self.pf]])
-            #line_path.append(['h', [-thick, 0]])    # replaced    with    dimpled    version
+            line_path.append(['v', [-self.boxD/self.Dtabs/4 - self.pf/2]])
+            line_path.append(['h', [self.thick]])
+            line_path.append(['v', [-self.boxD/self.Dtabs/2 + self.pf]])
+            #line_path.append(['h', [-thick]])    # replaced    with    dimpled    version
             for l in self.thickness_line(self.dimple, 'h', -1):
                 line_path.append(l)
-            line_path.append(['v', [0, -self.boxD/self.Dtabs/4 - self.pf/2]])
+            line_path.append(['v', [-self.boxD/self.Dtabs/4 - self.pf/2]])
         if not self.ht: line_path.append(['l', [0, -self.boxD/self.Dtabs/4 - self.pf/2]])
         #
-        if not corners: line_path.append(['h', [self.thick, 0]])
+        if not corners: line_path.append(['h', [self.thick]])
         return line_path
 
 
@@ -334,148 +335,62 @@ class LasercutBox(inkex.Effect):
         # top row of tabs
         line_path.append(['M', [startx, starty]])
         if not(mask and corners and self.kerf == 0.0):
-            line_path.append(['h', [self.thick, 0]])
+            line_path.append(['h', [self.thick]])
         else:
             line_path.append(['m', [self.thick, 0]])
         if not self.ht: line_path.append(['l', [self.boxD/self.Dtabs/4 - self.pf/2, 0]])
         for i in range(int(self.Dtabs)):
-            line_path.append(['h', [self.boxD/self.Dtabs/4 - self.pf/2, 0]])
-            line_path.append(['v', [0, -self.thick]])
-            line_path.append(['h', [self.boxD/self.Dtabs/2 + self.pf, 0]])
+            line_path.append(['h', [self.boxD/self.Dtabs/4 - self.pf/2]])
+            line_path.append(['v', [-self.thick]])
+            line_path.append(['h', [self.boxD/self.Dtabs/2 + self.pf]])
             #line_path.append(['v', [0, thick]])  # replaced with dimpled version
             for l in self.thickness_line(self.dimple, 'v', 1):
                 line_path.append(l)
-            line_path.append(['h', [self.boxD/self.Dtabs/4 - self.pf/2, 0]])
+            line_path.append(['h', [self.boxD/self.Dtabs/4 - self.pf/2]])
         if not self.ht: line_path.append(['l', [self.boxD/self.Dtabs/4 - self.pf/2, 0]])
-        line_path.append(['h', [self.thick, 0]])
+        line_path.append(['h', [self.thick]])
         #
         if not self.ht: line_path.append(['l', [0, self.boxH/self.Htabs/4 + self.pf/2]])
         for i in range(int(self.Htabs)):
-            line_path.append(['v', [0, self.boxH/self.Htabs/4 + self.pf/2]])
-            #line_path.append(['h', [-thick, 0]]) # replaced with  dimpled version
+            line_path.append(['v', [self.boxH/self.Htabs/4 + self.pf/2]])
+            #line_path.append(['h', [-thick]]) # replaced with  dimpled version
             for l in self.thickness_line(self.dimple, 'h', -1):
                 line_path.append(l)
-            line_path.append(['v', [0, self.boxH/self.Htabs/2 - self.pf]])
-            line_path.append(['h', [self.thick, 0]])
-            line_path.append(['v', [0, self.boxH/self.Htabs/4 + self.pf/2]])
+            line_path.append(['v', [self.boxH/self.Htabs/2 - self.pf]])
+            line_path.append(['h', [self.thick]])
+            line_path.append(['v', [self.boxH/self.Htabs/4 + self.pf/2]])
         if not self.ht: line_path.append(['l', [0, self.boxH/self.Htabs/4 + self.pf/2]])
-        line_path.append(['h', [-self.thick, 0]])
+        line_path.append(['h', [-self.thick]])
         #
         if not self.ht: line_path.append(['l', [-self.boxD/self.Dtabs/4 + self.pf/2, 0]])
         for i in range(int(self.Dtabs)):
-            line_path.append(['h', [-self.boxD/self.Dtabs/4 + self.pf/2, 0]])
+            line_path.append(['h', [-self.boxD/self.Dtabs/4 + self.pf/2]])
             #line_path.append(['v', [0, thick]])  # replaced with dimpled version
             for l in self.thickness_line(self.dimple, 'v', 1):  # this is the weird +1 instead of -1 dimple
                 line_path.append(l)
-            line_path.append(['h', [-self.boxD/self.Dtabs/2 - self.pf, 0]])
-            line_path.append(['v', [0, -self.thick]])
-            line_path.append(['h', [-self.boxD/self.Dtabs/4 + self.pf/2, 0]])
+            line_path.append(['h', [-self.boxD/self.Dtabs/2 - self.pf]])
+            line_path.append(['v', [-self.thick]])
+            line_path.append(['h', [-self.boxD/self.Dtabs/4 + self.pf/2]])
         if not self.ht: line_path.append(['l', [-self.boxD/self.Dtabs/4 + self.pf/2, 0]])
-        line_path.append(['h', [-self.thick, 0]])
+        line_path.append(['h', [-self.thick]])
         #
         if self.kerf > 0.0:  # if fit perfectly - don't draw double line
             if not self.ht: line_path.append(['l', [0, -self.boxH/self.Htabs/4 - self.pf/2]])
             for i in range(int(self.Htabs)):
-                line_path.append(['v', [0, -self.boxH/self.Htabs/4 - self.pf/2]])
-                line_path.append(['h', [self.thick, 0]])
-                line_path.append(['v', [0, -self.boxH/self.Htabs/2 + self.pf]])
+                line_path.append(['v', [-self.boxH/self.Htabs/4 - self.pf/2]])
+                line_path.append(['h', [self.thick]])
+                line_path.append(['v', [-self.boxH/self.Htabs/2 + self.pf]])
                 #line_path.append(['h', [-thick, 0]])  # replaced with dimpled version
                 for l in self.thickness_line(self.dimple, 'h', -1):
                     line_path.append(l)
-                line_path.append(['v', [0, -self.boxH/self.Htabs/4 - self.pf/2]])
+                line_path.append(['v', [-self.boxH/self.Htabs/4 - self.pf/2]])
             if not self.ht: line_path.append(['l', [0, -self.boxH/self.Htabs/4 - self.pf/2]])
         return line_path
 
-    ###
-    def thin(self, sel):
-        """ Parse the svg path - but don't use simplepath.parsePath because
-             it converts all to M, L and no locals
-            Instead - parse it ourselves                                      """
-        svgtokens = ['M','L','H','V','C','S','Q','T','A','Z']
-        for node in sel.iterchildren():
-            if node.tag == inkex.addNS('path','svg'):
-                d = node.get('d')
-                for t in svgtokens:
-                    d = d.replace(t, ",%s"%t)
-                    d = d.replace(t.lower(), ",%s"%t.lower())
-                path = d.split(",")
-                # remove empty cells
-                if path.count("") > 0: path.remove("")
-                #sys.stderr.write("thin Path length=%d\n"% len(path))
-                # parse it ourselves
-                prevx = path[0][-2]
-                prevy = path[0][-1]
-                prevtype = path[0][0]
-                count = 1
-                result = [path[0]]
-                while count < len(path)-1:
-                    line = path[count]
-                    thistype = line[0]
-                    thisx = line[1:].split()[0]
-                    thisy = line[1:].split()[1]
-                    if thistype == prevtype and thistype.lower() in ['h','v']:
-                        # simplify
-                        result.pop()  # remove last one
-                        result.append("%s%f %f" % (prevtype, float(thisx) + float(prevx), float(thisy)+float(prevy)))
-                    else:
-                        result.append(line)
-                    count += 1
-                    prevx = thisx
-                    prevy = thisy
-                    prevtype = thistype
-                # add last element (unsimplified)
-                result.append(path[-1])
-                # now inject back into d
-                newd = ""
-                for j in result:
-                    newd += j
-                #sys.stderr.write("new  length=%d\n" % len(result))
-                node.set('d',newd)
-
-            
-    def trim_svg_path(self, sel):
-        """ Force the svg we just made into its minimal config
-            to try to get rid of extra nodes                    """
-        # h and v become single numbers
-        svgtokens = ['M','L','H','V','C','S','Q','T','A','Z']
-        for node in sel.iterchildren():
-            if node.tag == inkex.addNS('path','svg'):
-                d = node.get('d')
-                for t in svgtokens:
-                    d = d.replace(t, ",%s"%t)
-                    d = d.replace(t.lower(), ",%s"%t.lower())
-                path = d.split(",")
-                # remove empty cells
-                if path.count("") > 0: path.remove("")
-                #
-                count = 1
-                result = [path[0]]
-                while count < len(path):
-                    line = path[count]
-                    thistype = line[0]
-                    thisx = line[1:].split()[0]
-                    thisy = line[1:].split()[1]
-                    if thistype.lower() =='h':
-                        # simplify
-                        result.append("%s%s" % (thistype, thisx))
-                    elif thistype.lower() =='v':
-                        # simplify
-                        result.append("%s%s" % (thistype, thisy))
-                    else:
-                        result.append(line)
-                    count += 1
-                #result.append(path[-1])
-                # now inject back into d
-                newd = ""
-                for j in result:
-                    newd += j
-                node.set('d',newd)
 
 
-
-
-    ###------------------------------------------
-    ### Main function called by the inkscape UI.
+    ###--------------------------------------------
+    ### The    main function    called    by    the    inkscape    UI
     def effect(self):
         # document dimensions (for centering)
         docW = self.svg.unittouu(self.document.getroot().get('width'))
@@ -494,7 +409,7 @@ class LasercutBox(inkex.Effect):
         line_width  = self.options.linewidth
         corners  = self.options.corners
         self.dimple_tri = self.options.dstyle
-        self.annotation = self.options.annotation
+        # self.annotation = self.options.annotation
         self.ht  = self.options.halftabs
         if not self.ht:
             self.Wtabs += 0.5
@@ -523,20 +438,21 @@ class LasercutBox(inkex.Effect):
         ls = self.line_style
         if line_width: # user wants drawn line width to be same as kerf size
             ls['stroke-width'] = sw
-        line_style = simplestyle.formatStyle(ls)
+        line_style = str(inkex.Style(ls))
 
         ###--------------------------- 
         ### create the inkscape object
-        box_id = self.uniqueId('box')
-        self.box = g = inkex.etree.SubElement(self.current_layer, 'g', {'id':box_id})
+        box_id = self.svg.get_unique_id('box')
+        self.box = g = etree.SubElement(self.svg.get_current_layer(), 'g', {'id':box_id})
 
         #Set local position for drawing (will transform to center of doc at end)
         lower_pos = 0
         left_pos  = 0
         # Draw Lid (using SVG path definitions)
         line_path = self.draw_WH_lid(left_pos, lower_pos)
+        #print(str(line_path), file=sys.stderr)
         # Add to scene
-        line_atts = { 'style':line_style, 'id':box_id+'-lid', 'd':formatPath(line_path) }
+        line_atts = { 'style':line_style, 'id':box_id+'-lid', 'd':str(Path(line_path)) }
         etree.SubElement(g, inkex.addNS('path','svg'), line_atts)
 
         # draw the side of the box directly below
@@ -548,7 +464,7 @@ class LasercutBox(inkex.Effect):
         # Draw side of the box (placed below the lid)
         line_path = self.draw_WD_side(left_pos, lower_pos, corners=corners)
         # Add to scene
-        line_atts = { 'style':line_style, 'id':box_id+'-longside1', 'd':formatPath(line_path) }
+        line_atts = { 'style':line_style, 'id':box_id+'-longside1', 'd':str(Path(line_path)) }
         etree.SubElement(g, inkex.addNS('path','svg'), line_atts)
 
         # draw the bottom of the box directly below
@@ -560,7 +476,7 @@ class LasercutBox(inkex.Effect):
         # Draw base of the box
         line_path = self.draw_WH_lid(left_pos, lower_pos, True)
         # Add to scene
-        line_atts = { 'style':line_style, 'id':box_id+'-base', 'd':formatPath(line_path) }
+        line_atts = { 'style':line_style, 'id':box_id+'-base', 'd':str(Path(line_path)) }
         etree.SubElement(g, inkex.addNS('path','svg'), line_atts)
 
         # draw the second side of the box directly below
@@ -572,7 +488,7 @@ class LasercutBox(inkex.Effect):
         # Draw side of the box (placed below the lid)
         line_path = self.draw_WD_side(left_pos, lower_pos, corners=corners)
         # Add to scene
-        line_atts = { 'style':line_style, 'id':box_id+'-longside2', 'd':formatPath(line_path) }
+        line_atts = { 'style':line_style, 'id':box_id+'-longside2', 'd':str(Path(line_path)) }
         etree.SubElement(g, inkex.addNS('path','svg'), line_atts)
 
         # draw next on RHS of lid
@@ -584,7 +500,7 @@ class LasercutBox(inkex.Effect):
         # Side of the box (placed next to the lid)
         line_path = self.draw_HD_side(left_pos, lower_pos, corners)
         # Add to scene
-        line_atts = { 'style':line_style, 'id':box_id+'-endface2', 'd':formatPath(line_path) }
+        line_atts = { 'style':line_style, 'id':box_id+'-endface2', 'd':str(Path(line_path)) }
         etree.SubElement(g, inkex.addNS('path','svg'), line_atts)
 
         # draw next on RHS of base
@@ -595,7 +511,7 @@ class LasercutBox(inkex.Effect):
         # Side of the box (placed next to the lid)
         line_path = self.draw_HD_side(left_pos, lower_pos, corners, True)
         # Add to scene
-        line_atts = { 'style':line_style, 'id':box_id+'-endface1', 'd':formatPath(line_path) }
+        line_atts = { 'style':line_style, 'id':box_id+'-endface1', 'd':str(Path(line_path)) }
         etree.SubElement(g, inkex.addNS('path','svg'), line_atts)
 
         
@@ -605,9 +521,6 @@ class LasercutBox(inkex.Effect):
         left_pos += self.boxH + 2*self.thick
         g.set( 'transform', 'translate(%f,%f)' % ( (docW-left_pos)/2, (docH-lower_pos)/2))
 
-        # The implementation algorithm has added intermediate short lines and doubled up when using h,v with extra zeros
-        self.thin(g)  # remove short straight lines
-        self.trim_svg_path(g)  # remove extra zero points
 
 ###
 if __name__ == '__main__':

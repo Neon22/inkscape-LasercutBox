@@ -9,10 +9,10 @@
 The corner cubes can be omitted.
 The document units should be set to mm instead of pixels (assuming you mean to really cut it out with a laser).
 			</param>
-			<param name="int_ext" gui-text="Dimensions are" type="optiongroup" appearance="radio">
+			<param name="int_ext" gui-text="Dimensions are" type="optiongroup" appearance="combo">
 				<option value="True">External</option>
 				<option value="False">Internal</option></param>
-			<param name="units" gui-text="Units" type="optiongroup" appearance="radio">
+			<param name="units" gui-text="Units" type="optiongroup" appearance="combo">
 				<option value="px">px</option>
 				<option value="pt">pt</option>
 				<option value="in">in</option>
@@ -77,8 +77,6 @@ Specifically:
    - Orange is a non-printing annotation
 The lines are all 0.1mm in width - as required by Ponoko.
 
-Annotations can be shown. They describe the kerf amount only and are shown on each piece.
-This can be helpful if printing tests fits for different materials.
 
 
 
@@ -90,7 +88,6 @@ This can be helpful if printing tests fits for different materials.
 
 
 			</param>
-			<param name="annotation" type="bool" gui-text="Include annotation">true</param>
 		</page>
 	</param>
 	<effect>
